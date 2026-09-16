@@ -82,8 +82,17 @@ jobs:
       - name: Clone.
         uses: actions/checkout@v7
         with:
-          submodules: recursive
+          submodules: false
+          persist-credentials: false
           path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}
+
+      - name: Checkout submodules.
+        shell: bash
+        run: |
+          cd "$TBUILD/$REPO_NAME"
+          git config --global --unset-all http.https://github.com/.extraheader || true
+          git config --local --unset-all http.https://github.com/.extraheader || true
+          git submodule update --init --recursive --jobs 4
 
       - name: First set up.
         shell: bash
