@@ -45,8 +45,7 @@ bool CustomHotkeys::Matches(HotkeyAction action, int key, Qt::KeyboardModifiers 
 	if (seq.isEmpty()) {
 		return false;
 	}
-	const auto combined = int(modifiers) | key;
-	return (combined == seq[0]);
+	return (seq.matches(QKeySequence(modifiers | Qt::Key(key))) == QKeySequence::ExactMatch);
 }
 
 } // namespace SpookyGram

@@ -142,7 +142,7 @@ void SpookyGramSettingsBox(
 		object_ptr<Ui::RoundButton>(
 			content,
 			u"Open Bookmarks Manager"_q,
-			st::defaultRoundButton),
+			st::defaultActiveButton),
 		st::boxRowPadding);
 	openBookmarksBtn->setClickedCallback([=] {
 		controller->show(Box(BookmarksBox, controller));
@@ -162,7 +162,7 @@ void SpookyGramSettingsBox(
 		object_ptr<Ui::RoundButton>(
 			content,
 			u"Test AI Provider (Mock)"_q,
-			st::defaultRoundButton),
+			st::defaultLightButton),
 		st::boxRowPadding);
 	testAiBtn->setClickedCallback([=] {
 		AI()->summarize(

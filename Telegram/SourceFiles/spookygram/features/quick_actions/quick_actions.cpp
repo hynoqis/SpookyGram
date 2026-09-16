@@ -10,6 +10,8 @@
 #include "ui/toast/toast.h"
 #include "window/window_session_controller.h"
 #include "main/main_session.h"
+#include "apiwrap.h"
+#include "api/api_common.h"
 #include "styles/style_menu_icons.h"
 
 #include <QtGui/QGuiApplication>
@@ -69,11 +71,9 @@ void AddMenuItems(
 	if (cfg.quickActionResend() && !item->originalText().text.isEmpty()) {
 		menu->addAction(u"Quick Resend"_q, [=] {
 			if (const auto current = controller->session().data().message(itemId)) {
-				auto text = current->originalText();
-				controller->session().api().sendMessage(
-					current->history(),
-					std::move(text),
-					Api::SendOptions());
+				auto message = Api::MessageToSend(Api::SendAction(current->history()));
+				message.textWithTags = current->originalText();
+				current->history()->session().api().sendMessage(std::move(message));
 				Ui::Toast::Show(u"Message resent."_q);
 			}
 		}, &st::menuIconForward);

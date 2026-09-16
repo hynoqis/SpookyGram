@@ -74,15 +74,15 @@ void BookmarksBox(
 		}
 
 		const auto btnWrap = row->add(
-			object_ptr<Ui::FixedHeightWidget>(row, st::defaultRoundButton.height));
+			object_ptr<Ui::FixedHeightWidget>(row, st::defaultActiveButton.height));
 		const auto jumpBtn = Ui::CreateChild<Ui::RoundButton>(
 			btnWrap,
 			u"Go to Message"_q,
-			st::defaultRoundButton);
+			st::defaultActiveButton);
 		jumpBtn->moveToLeft(0, 0);
 		jumpBtn->setClickedCallback([=, peerId = item.peerId, msgId = item.msgId] {
 			if (const auto peer = controller->session().data().peer(peerId)) {
-				controller->showPeerHistory(peer, ShowAtUnreadMsgId, msgId);
+				controller->showPeerHistory(peer->id, Window::SectionShow(), msgId);
 				box->closeBox();
 			}
 		});
@@ -90,7 +90,7 @@ void BookmarksBox(
 		const auto removeBtn = Ui::CreateChild<Ui::RoundButton>(
 			btnWrap,
 			u"Remove"_q,
-			st::defaultRoundButton);
+			st::defaultLightButton);
 		removeBtn->moveToLeft(jumpBtn->width() + st::defaultBoxButton.textTop, 0);
 		removeBtn->setClickedCallback([=, id = item.id] {
 			Bookmarks().removeBookmark(id);
