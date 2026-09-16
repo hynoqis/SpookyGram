@@ -81,10 +81,8 @@ void BookmarksBox(
 			st::defaultActiveButton);
 		jumpBtn->moveToLeft(0, 0);
 		jumpBtn->setClickedCallback([=, peerId = item.peerId, msgId = item.msgId] {
-			if (const auto peer = controller->session().data().peer(peerId)) {
-				controller->showPeerHistory(peer->id, Window::SectionShow(), msgId);
-				box->closeBox();
-			}
+			controller->showPeerHistory(PeerId(peerId), Window::SectionShow(), MsgId(msgId));
+			box->closeBox();
 		});
 
 		const auto removeBtn = Ui::CreateChild<Ui::RoundButton>(
