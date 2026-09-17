@@ -15,6 +15,7 @@
 #include "styles/style_settings.h"
 #include "lang/lang_keys.h"
 #include "window/window_session_controller.h"
+#include <rpl/rpl.h>
 
 namespace SpookyGram {
 
