@@ -4,6 +4,8 @@
 #include "data/data_channel.h"
 #include "data/data_chat.h"
 #include "data/data_user.h"
+#include "data/data_session.h"
+#include "data/notify/data_notify_settings.h"
 
 namespace SpookyGram {
 
@@ -37,7 +39,7 @@ bool SmartFolders::matches(SmartFilterType type, not_null<History*> history) con
 	case SmartFilterType::ChannelsOnly:
 		return peer->isChannel() && !peer->asChannel()->isMegagroup();
 	case SmartFilterType::MutedOnly:
-		return history->mute();
+		return peer->owner().notifySettings().isMuted(peer);
 	case SmartFilterType::MediaOnly:
 	case SmartFilterType::RecentActivity:
 		return true;

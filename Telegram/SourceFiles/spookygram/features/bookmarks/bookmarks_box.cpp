@@ -53,20 +53,20 @@ void BookmarksBox(
 			headerText += u" \u2022 "_q + dt.toString(u"yyyy-MM-dd hh:mm"_q);
 		}
 
-		auto header = row->add(
+		row->add(
 			object_ptr<Ui::FlatLabel>(
 				row,
 				headerText,
 				st::defaultFlatLabel));
 
-		auto snippet = row->add(
+		row->add(
 			object_ptr<Ui::FlatLabel>(
 				row,
 				item.snippet,
 				st::boxLabel));
 
 		if (!item.note.isEmpty()) {
-			auto note = row->add(
+			row->add(
 				object_ptr<Ui::FlatLabel>(
 					row,
 					u"Note: "_q + item.note,
@@ -77,7 +77,7 @@ void BookmarksBox(
 			object_ptr<Ui::FixedHeightWidget>(row, st::defaultActiveButton.height));
 		const auto jumpBtn = Ui::CreateChild<Ui::RoundButton>(
 			btnWrap,
-			u"Go to Message"_q,
+			rpl::single(u"Go to Message"_q),
 			st::defaultActiveButton);
 		jumpBtn->moveToLeft(0, 0);
 		jumpBtn->setClickedCallback([=, peerId = item.peerId, msgId = item.msgId] {
@@ -87,7 +87,7 @@ void BookmarksBox(
 
 		const auto removeBtn = Ui::CreateChild<Ui::RoundButton>(
 			btnWrap,
-			u"Remove"_q,
+			rpl::single(u"Remove"_q),
 			st::defaultLightButton);
 		removeBtn->moveToLeft(jumpBtn->width() + st::defaultBoxButton.textTop, 0);
 		removeBtn->setClickedCallback([=, id = item.id] {
