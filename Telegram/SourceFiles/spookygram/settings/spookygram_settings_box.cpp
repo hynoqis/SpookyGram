@@ -41,7 +41,7 @@ void SpookyGramSettingsBox(
 			st::defaultCheckbox),
 		st::boxRowPadding);
 	compactCheck->checkedChanges(
-	) | rpl::start_with_next([&](bool checked) {
+	) | rpl::on_next([&](bool checked) {
 		cfg.setCompactMode(checked);
 	}, content->lifetime());
 
@@ -65,7 +65,7 @@ void SpookyGramSettingsBox(
 		const auto cb = content->add(
 			object_ptr<Ui::Checkbox>(content, label, current, st::defaultCheckbox),
 			st::boxRowPadding);
-		cb->checkedChanges() | rpl::start_with_next([&cfg, setter](bool checked) {
+		cb->checkedChanges() | rpl::on_next([&cfg, setter](bool checked) {
 			(cfg.*setter)(checked);
 		}, content->lifetime());
 	};
@@ -100,7 +100,7 @@ void SpookyGramSettingsBox(
 			st::defaultCheckbox),
 		st::boxRowPadding);
 	hideNotifyCheck->checkedChanges(
-	) | rpl::start_with_next([&](bool checked) {
+	) | rpl::on_next([&](bool checked) {
 		cfg.setHidePreviewInNotifications(checked);
 	}, content->lifetime());
 
@@ -112,7 +112,7 @@ void SpookyGramSettingsBox(
 			st::defaultCheckbox),
 		st::boxRowPadding);
 	hideMinCheck->checkedChanges(
-	) | rpl::start_with_next([&](bool checked) {
+	) | rpl::on_next([&](bool checked) {
 		cfg.setHideOnMinimize(checked);
 	}, content->lifetime());
 
@@ -124,7 +124,7 @@ void SpookyGramSettingsBox(
 			st::defaultCheckbox),
 		st::boxRowPadding);
 	autoClearCheck->checkedChanges(
-	) | rpl::start_with_next([&](bool checked) {
+	) | rpl::on_next([&](bool checked) {
 		cfg.setAutoClearHistory(checked);
 	}, content->lifetime());
 
