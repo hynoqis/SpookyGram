@@ -6,7 +6,7 @@ namespace SpookyGram::Style {
 
 inline constexpr auto kBrandName = "SpookyGram";
 
-// Core brand palette for SpookyGram (dark-first, purple accent)
+// Core brand palette for SpookyGram (deep purple #7b42f6)
 inline const auto kDarkBg = QColor(0x0e, 0x0d, 0x14);
 inline const auto kDarkSurface = QColor(0x13, 0x12, 0x1b);
 inline const auto kDarkSurfaceOver = QColor(0x1a, 0x18, 0x24);
