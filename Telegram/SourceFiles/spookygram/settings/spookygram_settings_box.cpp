@@ -142,7 +142,7 @@ void SpookyGramSettingsBox(
 	const auto openBookmarksBtn = content->add(
 		object_ptr<Ui::RoundButton>(
 			content,
-			u"Open Bookmarks Manager"_q,
+			rpl::single(u"Open Bookmarks Manager"_q),
 			st::defaultActiveButton),
 		st::boxRowPadding);
 	openBookmarksBtn->setClickedCallback([=] {
@@ -162,7 +162,7 @@ void SpookyGramSettingsBox(
 	const auto testAiBtn = content->add(
 		object_ptr<Ui::RoundButton>(
 			content,
-			u"Test AI Provider (Mock)"_q,
+			rpl::single(u"Test AI Provider (Mock)"_q),
 			st::defaultLightButton),
 		st::boxRowPadding);
 	testAiBtn->setClickedCallback([=] {
