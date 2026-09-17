@@ -2,6 +2,7 @@
 #include "spookygram/core/spookygram_settings.h"
 #include "spookygram/features/bookmarks/bookmarks_box.h"
 #include "spookygram/features/bookmarks/bookmarks_storage.h"
+#include "spookygram/features/fonts/spookygram_fonts.h"
 #include "spookygram/ai/ai_manager.h"
 
 #include "ui/widgets/checkbox.h"
@@ -22,7 +23,7 @@ namespace SpookyGram {
 void SpookyGramSettingsBox(
 		not_null<Ui::GenericBox*> box,
 		not_null<Window::SessionController*> controller) {
-	box->setTitle(u"SpookyGram Settings"_q);
+	box->setTitle(u"Настройки SpookyGram"_q);
 
 	auto &cfg = Config();
 	const auto content = box->verticalLayout();
@@ -32,153 +33,205 @@ void SpookyGramSettingsBox(
 		Ui::AddSubsectionTitle(content, rpl::single(title), st::boxRowPadding);
 	};
 
-	// 1. Appearance
-	addHeader(u"Appearance"_q);
-	const auto compactCheck = content->add(
-		object_ptr<Ui::Checkbox>(
-			content,
-			u"Compact Mode (reduced spacing, compact chat list)"_q,
-			cfg.compactMode(),
-			st::defaultCheckbox),
-		st::boxRowPadding);
-	compactCheck->checkedChanges(
-	) | rpl::on_next([&](bool checked) {
-		cfg.setCompactMode(checked);
-	}, content->lifetime());
+	const auto addSectionDivider = [&] {
+		Ui::AddSkip(content);
+		Ui::AddDivider(content);
+		Ui::AddSkip(content);
+	};
+
+	const auto addBoxCheckbox = [&](
+			const QString &text,
+			bool current,
+			auto onChange) {
+		const auto cb = content->add(
+			object_ptr<Ui::Checkbox>(
+				content,
+				text,
+				current,
+				st::defaultBoxCheckbox),
+			st::boxRowPadding);
+		cb->setAllowTextLines(0);
+		cb->setCheckAlignment(style::al_top);
+		cb->checkedChanges(
+		) | rpl::on_next(std::move(onChange), content->lifetime());
+		return cb;
+	};
+
+	// 1. Внешний вид
+	addHeader(u"Внешний вид"_q);
+	addBoxCheckbox(
+		u"Компактный режим (уменьшенные отступы в списке чатов и сообщений)"_q,
+		cfg.compactMode(),
+		[&](bool checked) { cfg.setCompactMode(checked); });
 
 	content->add(
 		object_ptr<Ui::FlatLabel>(
 			content,
-			u"Active Brand Palette: Spooky Dark-First with Deep Purple Accent."_q,
+			u"Фирменная тема: Spooky Dark с глубоким фиолетовым акцентом (#7b42f6)."_q,
 			st::boxLabel),
 		st::boxRowPadding);
 
-	// 2. Behavior & Quick Actions
-	addHeader(u"Behavior & Quick Actions"_q);
+	// 2. Шрифты и оформление
+	addSectionDivider();
+	addHeader(u"Шрифты и типографика"_q);
+
+	const auto currentFontLabel = content->add(
+		object_ptr<Ui::FlatLabel>(
+			content,
+			u"Текущий шрифт: "_q + Fonts::CurrentFontName(),
+			st::boxLabel),
+		st::boxRowPadding);
+
+	const auto openFontPickerBtn = content->add(
+		object_ptr<Ui::RoundButton>(
+			content,
+			rpl::single(u"Выбрать из системных шрифтов..."_q),
+			st::defaultActiveButton),
+		st::boxRowPadding);
+	openFontPickerBtn->setClickedCallback([=] {
+		Fonts::OpenSystemFontPicker(controller);
+	});
+
+	const auto openGoogleFontsBtn = content->add(
+		object_ptr<Ui::RoundButton>(
+			content,
+			rpl::single(u"Каталог Google Fonts..."_q),
+			st::defaultLightButton),
+		st::boxRowPadding);
+	openGoogleFontsBtn->setClickedCallback([=] {
+		Fonts::OpenGoogleFontsBox(controller);
+	});
+
+	const auto installFontFileBtn = content->add(
+		object_ptr<Ui::RoundButton>(
+			content,
+			rpl::single(u"Установить шрифт из файла (.ttf, .otf)..."_q),
+			st::defaultLightButton),
+		st::boxRowPadding);
+	installFontFileBtn->setClickedCallback([=] {
+		Fonts::InstallFontFromFile(controller);
+	});
+
+	if (Fonts::CurrentFontName() != u"По умолчанию (системный)"_q) {
+		const auto resetFontBtn = content->add(
+			object_ptr<Ui::RoundButton>(
+				content,
+				rpl::single(u"Сбросить шрифт на стандартный"_q),
+				st::defaultBoxButton),
+			st::boxRowPadding);
+		resetFontBtn->setClickedCallback([=] {
+			Fonts::ResetToDefaultFont(controller);
+		});
+	}
+
+	// 3. Быстрые действия
+	addSectionDivider();
+	addHeader(u"Быстрые действия (ПКМ по сообщению)"_q);
 	content->add(
 		object_ptr<Ui::FlatLabel>(
 			content,
-			u"Enable or disable custom actions in message context menu:"_q,
+			u"Выберите действия для контекстного меню сообщений:"_q,
 			st::boxLabel),
 		st::boxRowPadding);
 
 	const auto addActionToggle = [&](const QString &label, bool current, auto setter) {
-		const auto cb = content->add(
-			object_ptr<Ui::Checkbox>(content, label, current, st::defaultCheckbox),
-			st::boxRowPadding);
-		cb->checkedChanges() | rpl::on_next([&cfg, setter](bool checked) {
+		addBoxCheckbox(label, current, [&cfg, setter](bool checked) {
 			(cfg.*setter)(checked);
-		}, content->lifetime());
+		});
 	};
 
-	addActionToggle(u"Copy without formatting"_q, cfg.quickActionCopyClean(), &Settings::setQuickActionCopyClean);
-	addActionToggle(u"Copy message ID"_q, cfg.quickActionCopyId(), &Settings::setQuickActionCopyId);
-	addActionToggle(u"Copy message link"_q, cfg.quickActionCopyLink(), &Settings::setQuickActionCopyLink);
-	addActionToggle(u"Open sender profile"_q, cfg.quickActionSenderProfile(), &Settings::setQuickActionSenderProfile);
-	addActionToggle(u"Save to Bookmarks"_q, cfg.quickActionSaveBookmark(), &Settings::setQuickActionSaveBookmark);
-	addActionToggle(u"Quick resend"_q, cfg.quickActionResend(), &Settings::setQuickActionResend);
+	addActionToggle(u"Копировать чистый текст (без скрытых ссылок и мусора)"_q, cfg.quickActionCopyClean(), &Settings::setQuickActionCopyClean);
+	addActionToggle(u"Копировать ID сообщения"_q, cfg.quickActionCopyId(), &Settings::setQuickActionCopyId);
+	addActionToggle(u"Копировать ссылку на сообщение"_q, cfg.quickActionCopyLink(), &Settings::setQuickActionCopyLink);
+	addActionToggle(u"Открыть профиль автора сообщения"_q, cfg.quickActionSenderProfile(), &Settings::setQuickActionSenderProfile);
+	addActionToggle(u"Сохранить в закладки SpookyGram"_q, cfg.quickActionSaveBookmark(), &Settings::setQuickActionSaveBookmark);
+	addActionToggle(u"Быстрая пересылка сообщения"_q, cfg.quickActionResend(), &Settings::setQuickActionResend);
 
-	// 3. Hotkeys
-	addHeader(u"Custom Hotkeys"_q);
+	// 4. Горячие клавиши
+	addSectionDivider();
+	addHeader(u"Горячие клавиши"_q);
 	content->add(
 		object_ptr<Ui::FlatLabel>(
 			content,
-			u"Configured keyboard shortcuts:\n"
-			u"\u2022 Open Search: Ctrl+Shift+F\n"
-			u"\u2022 Open Bookmarks: Ctrl+Shift+B\n"
-			u"\u2022 Open SpookyGram Settings: Ctrl+Shift+S\n"
-			u"\u2022 Toggle Compact Mode: Ctrl+Shift+C"_q,
+			u"Настроенные быстрые комбинации клавиш:\n"
+			u" \u2022 Быстрый поиск: Ctrl+Shift+F\n"
+			u" \u2022 Открыть закладки: Ctrl+Shift+B\n"
+			u" \u2022 Настройки SpookyGram: Ctrl+Shift+S\n"
+			u" \u2022 Переключить компактный режим: Ctrl+Shift+C"_q,
 			st::boxLabel),
 		st::boxRowPadding);
 
-	// 4. Privacy
-	addHeader(u"Privacy"_q);
-	const auto hideNotifyCheck = content->add(
-		object_ptr<Ui::Checkbox>(
-			content,
-			u"Hide message text preview in notifications"_q,
-			cfg.hidePreviewInNotifications(),
-			st::defaultCheckbox),
-		st::boxRowPadding);
-	hideNotifyCheck->checkedChanges(
-	) | rpl::on_next([&](bool checked) {
-		cfg.setHidePreviewInNotifications(checked);
-	}, content->lifetime());
+	// 5. Конфиденциальность
+	addSectionDivider();
+	addHeader(u"Конфиденциальность"_q);
+	addBoxCheckbox(
+		u"Скрывать текст сообщений во всплывающих уведомлениях"_q,
+		cfg.hidePreviewInNotifications(),
+		[&](bool checked) { cfg.setHidePreviewInNotifications(checked); });
 
-	const auto hideMinCheck = content->add(
-		object_ptr<Ui::Checkbox>(
-			content,
-			u"Hide chat contents when minimized / unfocused"_q,
-			cfg.hideOnMinimize(),
-			st::defaultCheckbox),
-		st::boxRowPadding);
-	hideMinCheck->checkedChanges(
-	) | rpl::on_next([&](bool checked) {
-		cfg.setHideOnMinimize(checked);
-	}, content->lifetime());
+	addBoxCheckbox(
+		u"Скрывать содержимое чатов при сворачивании или потере фокуса"_q,
+		cfg.hideOnMinimize(),
+		[&](bool checked) { cfg.setHideOnMinimize(checked); });
 
-	const auto autoClearCheck = content->add(
-		object_ptr<Ui::Checkbox>(
-			content,
-			u"Auto-clear SpookyGram local action history on exit"_q,
-			cfg.autoClearHistory(),
-			st::defaultCheckbox),
-		st::boxRowPadding);
-	autoClearCheck->checkedChanges(
-	) | rpl::on_next([&](bool checked) {
-		cfg.setAutoClearHistory(checked);
-	}, content->lifetime());
+	addBoxCheckbox(
+		u"Автоматически очищать историю действий SpookyGram при выходе"_q,
+		cfg.autoClearHistory(),
+		[&](bool checked) { cfg.setAutoClearHistory(checked); });
 
-	// 5. Bookmarks
-	addHeader(u"Bookmarks"_q);
+	// 6. Закладки
+	addSectionDivider();
+	addHeader(u"Локальные закладки"_q);
 	const auto count = Bookmarks().listBookmarks().size();
 	content->add(
 		object_ptr<Ui::FlatLabel>(
 			content,
-			u"Total saved bookmarks: "_q + QString::number(count),
+			u"Всего сохранено закладок: "_q + QString::number(count),
 			st::boxLabel),
 		st::boxRowPadding);
 
 	const auto openBookmarksBtn = content->add(
 		object_ptr<Ui::RoundButton>(
 			content,
-			rpl::single(u"Open Bookmarks Manager"_q),
+			rpl::single(u"Открыть менеджер закладок"_q),
 			st::defaultActiveButton),
 		st::boxRowPadding);
 	openBookmarksBtn->setClickedCallback([=] {
 		controller->show(Box(BookmarksBox, controller));
 	});
 
-	// 6. AI Integration
-	addHeader(u"AI Integration (Foundation)"_q);
+	// 7. Искусственный интеллект
+	addSectionDivider();
+	addHeader(u"Искусственный интеллект (AI)"_q);
 	content->add(
 		object_ptr<Ui::FlatLabel>(
 			content,
-			u"Provider: "_q + AI()->name() + u"\n"
-			u"Architecture prepared for OpenAI-compatible and Local endpoints."_q,
+			u"Провайдер: "_q + AI()->name() + u"\n"
+			u"Архитектура подготовлена для подключения OpenAI и локальных моделей."_q,
 			st::boxLabel),
 		st::boxRowPadding);
 
 	const auto testAiBtn = content->add(
 		object_ptr<Ui::RoundButton>(
 			content,
-			rpl::single(u"Test AI Provider (Mock)"_q),
+			rpl::single(u"Проверить работу AI (тестовый запрос)"_q),
 			st::defaultLightButton),
 		st::boxRowPadding);
 	testAiBtn->setClickedCallback([=] {
 		AI()->summarize(
-			u"SpookyGram is a customized Telegram Desktop client featuring dark purple theme and local productivity enhancements."_q,
+			u"SpookyGram — кастомизированный клиент Telegram Desktop с тёмно-фиолетовой темой и локальными улучшениями продуктивности."_q,
 			[=](QString result) {
 				Ui::Toast::Show(result);
 			});
 	});
 
-	// 7. Experimental
-	addHeader(u"Experimental"_q);
+	// 8. Экспериментальные функции
+	addSectionDivider();
+	addHeader(u"Экспериментальные функции"_q);
 	content->add(
 		object_ptr<Ui::FlatLabel>(
 			content,
-			u"Smart Folders and Message Context Bar are enabled locally."_q,
+			u"Умные правила фильтрации папок и быстрый контекстный тулбар активны локально."_q,
 			st::boxLabel),
 		st::boxRowPadding);
 

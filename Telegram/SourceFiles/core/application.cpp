@@ -99,6 +99,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ui/accessible/ui_accessible_factory.h"
 #include "ui/boxes/confirm_box.h"
 #include "core/cached_webview_availability.h"
+#include "spookygram/features/fonts/spookygram_fonts.h"
 #include "test/test_agent.h"
 
 #include <QtCore/QStandardPaths>
@@ -310,6 +311,7 @@ void Application::run() {
 
 	startLocalStorage();
 
+	SpookyGram::Fonts::InitFonts();
 	style::SetCustomFont(settings().customFontFamily());
 	style::internal::StartFonts();
 

@@ -366,6 +366,17 @@ void BuildSectionButtons(SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	const auto showOther = builder.showOther();
 
+	builder.addButton({
+		.id = u"main/spookygram"_q,
+		.title = rpl::single(u"SpookyGram"_q),
+		.icon = { &st::menuIconSettings },
+		.onClick = [=] {
+			controller->show(Box(SpookyGram::SpookyGramSettingsBox, controller));
+		},
+		.keywords = { u"spookygram"_q, u"bookmarks"_q, u"ai"_q, u"compact"_q, u"hotkeys"_q, u"fonts"_q },
+	});
+	builder.addSkip();
+
 	if (!session->supportMode()) {
 		builder.addSectionButton({
 			.title = tr::lng_settings_my_account(),
@@ -435,16 +446,6 @@ void BuildSectionButtons(SectionBuilder &builder) {
 		.targetSection = AdvancedId(),
 		.icon = { &st::menuIconManage },
 		.keywords = { u"performance"_q, u"proxy"_q, u"experimental"_q },
-	});
-
-	builder.addButton({
-		.id = u"main/spookygram"_q,
-		.title = rpl::single(u"SpookyGram"_q),
-		.icon = { &st::menuIconSettings },
-		.onClick = [=] {
-			controller->show(Box(SpookyGram::SpookyGramSettingsBox, controller));
-		},
-		.keywords = { u"spookygram"_q, u"bookmarks"_q, u"ai"_q, u"compact"_q, u"hotkeys"_q },
 	});
 
 	builder.addSectionButton({
@@ -725,7 +726,6 @@ void Main::setupContent() {
 			.isPaused = isPaused,
 			.highlights = highlights,
 		});
-		builder.addDivider();
 		builder.addSkip();
 		BuildValidationSuggestions(builder);
 		BuildSectionButtons(builder);

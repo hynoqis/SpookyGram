@@ -384,26 +384,22 @@ MainMenu::MainMenu(
 	parentResized();
 
 	_telegram->setMarkedText(tr::link(
-		u"Telegram Desktop"_q,
-		u"https://desktop.telegram.org"_q));
+		u"SpookyGram"_q,
+		u"https://github.com/hynoqis/SpookyGram"_q));
 	_telegram->setLinksTrusted();
-	// The canary version is too long for the "Version {version}" form.
+	const auto devVersionText = tr::lng_settings_current_version(
+		tr::now,
+		lt_version,
+		currentVersionShortText()) + u" Dev"_q;
 	_version->setMarkedText(
-		tr::link(
-			Core::BuildIsCanary
-				? currentVersionShortText()
-				: tr::lng_settings_current_version(
-					tr::now,
-					lt_version,
-					currentVersionShortText()),
-			1) // Link 1.
+		tr::link(devVersionText, 1) // Link 1.
 		.append(QChar(' '))
 		.append(QChar(8211))
 		.append(QChar(' '))
 		.append(tr::link(tr::lng_menu_about(tr::now), 2))); // Link 2.
 	_version->setLink(
 		1,
-		std::make_shared<UrlClickHandler>(Core::App().changelogLink()));
+		std::make_shared<UrlClickHandler>(u"https://github.com/hynoqis/SpookyGram/releases"_q));
 	_version->setLink(
 		2,
 		std::make_shared<LambdaClickHandler>([=] {

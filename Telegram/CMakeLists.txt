@@ -2224,6 +2224,8 @@ PRIVATE
     spookygram/ai/ai_manager.cpp
     spookygram/settings/spookygram_settings_box.h
     spookygram/settings/spookygram_settings_box.cpp
+    spookygram/features/fonts/spookygram_fonts.h
+    spookygram/features/fonts/spookygram_fonts.cpp
 )
 
 if (APPLE)
