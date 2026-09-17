@@ -68,6 +68,27 @@ jobs:
         shell: cmd
 
     steps:
+      - name: Free runner disk space.
+        shell: pwsh
+        run: |
+          Get-PSDrive
+          $paths = @(
+            "C:\ProgramData\Microsoft\AndroidNDK",
+            "C:\Microsoft\AndroidNDK",
+            "C:\Program Files\Android",
+            "C:\Program Files\Java",
+            "C:\hostedtoolcache\windows\Ruby",
+            "C:\hostedtoolcache\windows\Go",
+            "C:\hostedtoolcache\windows\Java"
+          )
+          foreach ($p in $paths) {
+            if (Test-Path $p) {
+              Write-Host "Removing $p..."
+              Remove-Item -Recurse -Force $p -ErrorAction SilentlyContinue
+            }
+          }
+          Get-PSDrive
+
       - name: Prepare directories.
         run: |
           mkdir %userprofile%\TBuild\Libraries
