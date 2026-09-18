@@ -26,6 +26,7 @@
 
 #include <QtGui/QFontDatabase>
 #include <QtGui/QPainter>
+#include <QtWidgets/QTextEdit>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QFile>
@@ -328,9 +329,12 @@ void OpenGoogleFontsBox(not_null<Window::SessionController*> controller) {
 			rows->push_back({ item, rowPtr });
 		}
 
-		QObject::connect(searchField, &Ui::InputField::changed, [=] {
-			renderRows(searchField->getLastText());
-		});
+		QObject::connect(
+			searchField->rawTextEdit().get(),
+			&QTextEdit::textChanged,
+			[=] {
+				renderRows(searchField->getLastText());
+			});
 
 		box->addButton(tr::lng_close(), [=] {
 			box->closeBox();

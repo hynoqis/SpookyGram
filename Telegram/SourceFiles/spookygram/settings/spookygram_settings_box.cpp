@@ -75,7 +75,7 @@ void SpookyGramSettingsBox(
 	addSectionDivider();
 	addHeader(u"Шрифты и типографика"_q);
 
-	const auto currentFontLabel = content->add(
+	content->add(
 		object_ptr<Ui::FlatLabel>(
 			content,
 			u"Текущий шрифт: "_q + Fonts::CurrentFontName(),
