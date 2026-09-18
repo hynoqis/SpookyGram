@@ -71,6 +71,33 @@ void Settings::setQuickPrivacyMode(bool value) {
 	save();
 }
 
+bool Settings::ghostMode() const {
+	return _ghostMode;
+}
+
+void Settings::setGhostMode(bool value) {
+	_ghostMode = value;
+	save();
+}
+
+bool Settings::antiDeleteEnabled() const {
+	return _antiDeleteEnabled;
+}
+
+void Settings::setAntiDeleteEnabled(bool value) {
+	_antiDeleteEnabled = value;
+	save();
+}
+
+bool Settings::antiEditEnabled() const {
+	return _antiEditEnabled;
+}
+
+void Settings::setAntiEditEnabled(bool value) {
+	_antiEditEnabled = value;
+	save();
+}
+
 bool Settings::autoClearHistory() const {
 	return _autoClearHistory;
 }
@@ -232,6 +259,15 @@ void Settings::load() {
 	if (obj.contains(u"autoClearHistory"_q)) {
 		_autoClearHistory = obj.value(u"autoClearHistory"_q).toBool(false);
 	}
+	if (obj.contains(u"ghostMode"_q)) {
+		_ghostMode = obj.value(u"ghostMode"_q).toBool(false);
+	}
+	if (obj.contains(u"antiDeleteEnabled"_q)) {
+		_antiDeleteEnabled = obj.value(u"antiDeleteEnabled"_q).toBool(false);
+	}
+	if (obj.contains(u"antiEditEnabled"_q)) {
+		_antiEditEnabled = obj.value(u"antiEditEnabled"_q).toBool(false);
+	}
 
 	if (obj.contains(u"hotkeySearch"_q)) {
 		_hotkeySearch = obj.value(u"hotkeySearch"_q).toString(_hotkeySearch);
@@ -286,6 +322,9 @@ void Settings::save() const {
 	obj[u"hideOnMinimize"_q] = _hideOnMinimize;
 	obj[u"quickPrivacyMode"_q] = _quickPrivacyMode;
 	obj[u"autoClearHistory"_q] = _autoClearHistory;
+	obj[u"ghostMode"_q] = _ghostMode;
+	obj[u"antiDeleteEnabled"_q] = _antiDeleteEnabled;
+	obj[u"antiEditEnabled"_q] = _antiEditEnabled;
 
 	obj[u"hotkeySearch"_q] = _hotkeySearch;
 	obj[u"hotkeyBookmarks"_q] = _hotkeyBookmarks;

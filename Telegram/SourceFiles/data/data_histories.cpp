@@ -33,6 +33,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/history_view_element.h"
 #include "core/application.h"
 #include "apiwrap.h"
+#include "spookygram/core/spookygram_settings.h"
 
 namespace Data {
 namespace {
@@ -714,6 +715,12 @@ void Histories::sendReadRequests() {
 
 void Histories::sendReadRequest(not_null<History*> history, State &state) {
 	Expects(state.willReadTill > state.sentReadTill);
+
+	if (SpookyGram::Config().ghostMode()) {
+		state.willReadTill = 0;
+		state.willReadWhen = 0;
+		return;
+	}
 
 	const auto tillId = state.sentReadTill = base::take(state.willReadTill);
 	state.willReadWhen = 0;

@@ -92,6 +92,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/call_delayed.h"
 #include "base/random.h"
 #include "spellcheck/spellcheck_highlight_syntax.h"
+#include "spookygram/core/spookygram_settings.h"
+#include "history/history_item_components.h"
 
 namespace Data {
 namespace {
@@ -3361,9 +3363,28 @@ void Session::processMessagesDeleted(
 		}
 	}
 	if (!toDestroy.empty()) {
-		notifyItemsAboutToBeDestroyed(toDestroy);
-		for (const auto &item : toDestroy) {
-			item->destroy();
+		if (SpookyGram::Config().antiDeleteEnabled()) {
+			auto reallyDestroy = std::vector<not_null<HistoryItem*>>();
+			for (const auto &item : toDestroy) {
+				if (!item->out()) {
+					item->setFactcheck(MessageFactcheck{
+						.text = { u"Удалено собеседником"_q },
+					});
+				} else {
+					reallyDestroy.push_back(item);
+				}
+			}
+			if (!reallyDestroy.empty()) {
+				notifyItemsAboutToBeDestroyed(reallyDestroy);
+				for (const auto &item : reallyDestroy) {
+					item->destroy();
+				}
+			}
+		} else {
+			notifyItemsAboutToBeDestroyed(toDestroy);
+			for (const auto &item : toDestroy) {
+				item->destroy();
+			}
 		}
 	}
 	for (const auto &history : historiesToCheck) {
@@ -3384,9 +3405,28 @@ void Session::processNonChannelMessagesDeleted(const QVector<MTPint> &data) {
 		}
 	}
 	if (!toDestroy.empty()) {
-		notifyItemsAboutToBeDestroyed(toDestroy);
-		for (const auto &item : toDestroy) {
-			item->destroy();
+		if (SpookyGram::Config().antiDeleteEnabled()) {
+			auto reallyDestroy = std::vector<not_null<HistoryItem*>>();
+			for (const auto &item : toDestroy) {
+				if (!item->out()) {
+					item->setFactcheck(MessageFactcheck{
+						.text = { u"Удалено собеседником"_q },
+					});
+				} else {
+					reallyDestroy.push_back(item);
+				}
+			}
+			if (!reallyDestroy.empty()) {
+				notifyItemsAboutToBeDestroyed(reallyDestroy);
+				for (const auto &item : reallyDestroy) {
+					item->destroy();
+				}
+			}
+		} else {
+			notifyItemsAboutToBeDestroyed(toDestroy);
+			for (const auto &item : toDestroy) {
+				item->destroy();
+			}
 		}
 	}
 	for (const auto &history : historiesToCheck) {

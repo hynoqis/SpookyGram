@@ -100,6 +100,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ui/boxes/confirm_box.h"
 #include "core/cached_webview_availability.h"
 #include "spookygram/features/fonts/spookygram_fonts.h"
+#include "spookygram/features/hotkeys/custom_hotkeys.h"
 #include "test/test_agent.h"
 
 #include <QtCore/QStandardPaths>
@@ -725,7 +726,9 @@ bool Application::eventFilter(QObject *object, QEvent *e) {
 		updateNonIdle();
 		_inAppKeyPressed.fire({});
 		const auto event = static_cast<QKeyEvent*>(e);
-		if (base::Platform::GlobalShortcuts::IsToggleFullScreenKey(event)
+		if (SpookyGram::CustomHotkeys::HandleKeyEvent(event, activeWindow())) {
+			return true;
+		} else if (base::Platform::GlobalShortcuts::IsToggleFullScreenKey(event)
 			&& toggleActiveWindowFullScreen()) {
 			return true;
 		} else if (Shortcuts::HandlePossibleChatSwitch(event)) {

@@ -164,6 +164,17 @@ void SpookyGramSettingsBox(
 	// 5. Конфиденциальность
 	addSectionDivider();
 	addHeader(u"Конфиденциальность"_q);
+
+	addBoxCheckbox(
+		u"👻 Режим призрака (не отмечать сообщения как прочитанные)"_q,
+		cfg.ghostMode(),
+		[&](bool checked) { cfg.setGhostMode(checked); });
+
+	addBoxCheckbox(
+		u"🗑️ Anti-Delete (сохранять удалённые собеседником сообщения)"_q,
+		cfg.antiDeleteEnabled(),
+		[&](bool checked) { cfg.setAntiDeleteEnabled(checked); });
+
 	addBoxCheckbox(
 		u"Скрывать текст сообщений во всплывающих уведомлениях"_q,
 		cfg.hidePreviewInNotifications(),

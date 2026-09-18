@@ -45,6 +45,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "main/main_session_settings.h"
 #include "ui/text/text_utilities.h"
 #include "platform/platform_specific.h"
+#include "spookygram/features/privacy/ui_privacy.h"
 
 #include <QtGui/QWindow>
 #include <QtGui/QGuiApplication>
@@ -1084,7 +1085,8 @@ Manager::DisplayOptions Manager::getNotificationOptions(
 		HistoryItem *item,
 		Data::ItemNotificationType type) const {
 	const auto hideEverything = Core::App().passcodeLocked()
-		|| forceHideDetails();
+		|| forceHideDetails()
+		|| SpookyGram::UIPrivacy::ShouldHideNotificationPreview();
 	const auto view = Core::App().settings().notifyView();
 	const auto peer = item ? item->history()->peer.get() : nullptr;
 	const auto topic = item ? item->topic() : nullptr;

@@ -47,6 +47,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "window/window_setup_email.h"
 #include "window/window_media_preview.h"
 #include "styles/style_window.h"
+#include "spookygram/core/spookygram_settings.h"
 
 #include <QtGui/QWindow>
 
@@ -593,6 +594,9 @@ void MainWindow::themeUpdated(const Window::Theme::BackgroundUpdate &data) {
 }
 
 bool MainWindow::markingAsRead() const {
+	if (SpookyGram::Config().ghostMode()) {
+		return false;
+	}
 	return _main
 		&& !_main->isHidden()
 		&& !_main->animatingShow()

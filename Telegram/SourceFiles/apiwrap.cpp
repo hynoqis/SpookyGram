@@ -107,6 +107,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "storage/download_manager_mtproto.h"
 #include "storage/file_upload.h"
 #include "storage/storage_account.h"
+#include "spookygram/core/spookygram_settings.h"
 
 namespace {
 
@@ -1436,6 +1437,9 @@ void ApiWrap::migrateFail(not_null<PeerData*> peer, const QString &error) {
 
 void ApiWrap::markContentsRead(
 		const base::flat_set<not_null<HistoryItem*>> &items) {
+	if (SpookyGram::Config().ghostMode()) {
+		return;
+	}
 	auto markedIds = QVector<MTPint>();
 	auto channelMarkedIds = base::flat_map<
 		not_null<ChannelData*>,
@@ -1467,6 +1471,9 @@ void ApiWrap::markContentsRead(
 }
 
 void ApiWrap::markContentsRead(not_null<HistoryItem*> item) {
+	if (SpookyGram::Config().ghostMode()) {
+		return;
+	}
 	if (!item->markContentsRead(true) || !item->isRegular()) {
 		return;
 	}

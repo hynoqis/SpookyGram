@@ -25,6 +25,15 @@ public:
 	[[nodiscard]] bool quickPrivacyMode() const;
 	void setQuickPrivacyMode(bool value);
 
+	[[nodiscard]] bool ghostMode() const;
+	void setGhostMode(bool value);
+
+	[[nodiscard]] bool antiDeleteEnabled() const;
+	void setAntiDeleteEnabled(bool value);
+
+	[[nodiscard]] bool antiEditEnabled() const;
+	void setAntiEditEnabled(bool value);
+
 	[[nodiscard]] bool autoClearHistory() const;
 	void setAutoClearHistory(bool value);
 
@@ -81,6 +90,9 @@ private:
 	bool _hideOnMinimize = false;
 	bool _quickPrivacyMode = false;
 	bool _autoClearHistory = false;
+	bool _ghostMode = false;
+	bool _antiDeleteEnabled = false;
+	bool _antiEditEnabled = false;
 
 	QString _hotkeySearch = u"Ctrl+Shift+F"_q;
 	QString _hotkeyBookmarks = u"Ctrl+Shift+B"_q;

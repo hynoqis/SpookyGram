@@ -22,6 +22,7 @@
 #include "styles/style_boxes.h"
 #include "styles/style_layers.h"
 #include "styles/style_settings.h"
+#include "ui/qt_object_factory.h"
 
 #include <QtGui/QFontDatabase>
 #include <QtGui/QPainter>
@@ -164,7 +165,7 @@ void OpenSystemFontPicker(not_null<Window::SessionController*> controller) {
 
 void InstallFontFromFile(not_null<Window::SessionController*> controller) {
 	FileDialog::GetOpenPath(
-		controller->widget(),
+		Core::App().getFileDialogParent(),
 		u"Выберите файл шрифта (.ttf, .otf)"_q,
 		u"Шрифты (*.ttf *.otf)"_q,
 		[=](FileDialog::OpenResult &&res) {
@@ -231,7 +232,7 @@ void OpenGoogleFontsBox(not_null<Window::SessionController*> controller) {
 		};
 		const auto rows = box->lifetime().make_state<std::vector<RowItem>>();
 
-		const auto netManager = box->lifetime().make_state<QNetworkAccessManager>();
+		const auto netManager = Ui::CreateChild<QNetworkAccessManager>(box.get());
 
 		const auto renderRows = [=](const QString &filterText) {
 			const auto query = filterText.trimmed().toLower();
@@ -327,10 +328,9 @@ void OpenGoogleFontsBox(not_null<Window::SessionController*> controller) {
 			rows->push_back({ item, rowPtr });
 		}
 
-		searchField->changes(
-		) | rpl::on_next([=] {
+		QObject::connect(searchField, &Ui::InputField::changed, [=] {
 			renderRows(searchField->getLastText());
-		}, searchField->lifetime());
+		});
 
 		box->addButton(tr::lng_close(), [=] {
 			box->closeBox();

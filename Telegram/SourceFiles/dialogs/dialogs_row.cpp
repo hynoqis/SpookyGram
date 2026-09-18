@@ -23,6 +23,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "dialogs/dialogs_entry.h"
 #include "dialogs/ui/dialogs_video_userpic.h"
 #include "dialogs/ui/dialogs_layout.h"
+#include "spookygram/features/compact/compact_mode.h"
 #include "data/data_channel.h"
 #include "data/data_community.h"
 #include "data/data_folder.h"
@@ -429,6 +430,7 @@ void Row::recountHeight(float64 narrowRatio, FilterId filterId) {
 			st.height,
 			st::defaultDialogRow.height,
 			narrowRatio);
+	_height = SpookyGram::CompactMode::DialogRowHeight(_height);
 }
 
 uint64 Row::sortKey(FilterId filterId) const {

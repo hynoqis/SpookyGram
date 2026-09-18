@@ -48,6 +48,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "tray.h"
 #include "styles/style_window.h"
 #include "styles/style_dialogs.h" // ChildSkip().x() for new child windows.
+#include "spookygram/features/privacy/ui_privacy.h"
 
 #ifdef Q_OS_MAC
 #include "platform/mac/global_menu_mac.h"
@@ -586,7 +587,8 @@ void MainWindow::handleStateChanged(Qt::WindowState state) {
 	Core::App().updateNonIdle();
 	using WorkMode = Core::Settings::WorkMode;
 	if (state == Qt::WindowMinimized
-		&& (Core::App().settings().workMode() == WorkMode::TrayOnly)) {
+		&& (SpookyGram::UIPrivacy::ShouldHideOnMinimize()
+			|| Core::App().settings().workMode() == WorkMode::TrayOnly)) {
 		minimizeToTray();
 	}
 	savePosition(state);
