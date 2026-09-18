@@ -194,7 +194,7 @@ jobs:
 
       - name: Save Libraries cache immediately.
         if: success()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: |
             ${{ env.LibrariesPath }}\*
@@ -206,7 +206,7 @@ jobs:
 
       - name: Save Qt cache immediately.
         if: success()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: |
             ${{ env.LibrariesPath }}\[qQ]t[_-]*
@@ -263,7 +263,7 @@ jobs:
 
       - name: Restore Build Objects Cache.
         id: cache-build-objects
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}\out
           key: ${{ runner.OS }}-${{ matrix.arch }}-build-out-${{ github.sha }}
@@ -291,7 +291,7 @@ jobs:
 
       - name: Save Build Objects Cache.
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}\out
           key: ${{ runner.OS }}-${{ matrix.arch }}-build-out-${{ github.sha }}
